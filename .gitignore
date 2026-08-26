@@ -1,0 +1,16 @@
+# 仮想環境
+.venv/
+
+# Pythonキャッシュファイル
+__pycache__/
+*.pyc
+
+# OS固有ファイル
+.DS_Store
+Thumbs.db
+
+# 開発ツール・環境変数のキャッシュ（追加推奨）
+.env
+.flake8
+.mypy_cache/
+.pytest_cache
