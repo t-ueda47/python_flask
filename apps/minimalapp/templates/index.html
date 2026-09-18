@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <title>CSSのテスト</title>
+        <!-- staticフォルダ内の style.css を読み込む -->
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='style.css') }}"
+        />
+    </head>
+    <body>
+        <div class="container">
+            <h1>FlaskのCSSテスト</h1>
+            <p>
+                CSSが正しく読み込まれると、背景がグレーになり、白いカード状の枠が表示されます。
+            </p>
+            <a href="#" class="btn">ボタン風リンク</a>
+        </div>
+    </body>
+</html>
