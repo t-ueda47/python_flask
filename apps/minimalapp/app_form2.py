@@ -1,5 +1,6 @@
 """お問い合わせフォームの作成(入力チェック追加)"""
 
+import logging
 from email_validator import validate_email, EmailNotValidError
 from flask import Flask, redirect, render_template, request, url_for, flash
 
@@ -7,6 +8,8 @@ app = Flask(__name__)
 
 # flash使用のためSECRET_KEYの設定
 app.config["SECRET_KEY"] = "samplekey123"
+# ログの設定
+app.logger.setLevel(logging.DEBUG)
 
 
 @app.route("/")
@@ -50,6 +53,8 @@ def contact_complete():
         except EmailNotValidError:
             flash("メールアドレスの形式で入力してください")
             is_valid = False
+            # ログ1
+            app.logger.warning("メールアドレス形式エラー : %s", email)
 
         # 問い合わせがnullだったら
         if not description:
@@ -58,9 +63,15 @@ def contact_complete():
 
         # バリデーションクリアしなかった
         if not is_valid:
+            # ログ2
+            app.logger.warning("入力チェックエラーが発生しました")
+
             return redirect(url_for("contact"))
 
-        # メールを送る
+        # ログ3
+        app.logger.info("お問い合わせ受付完了")
+
+        # メールを送るTODO
 
         # 問い合わせ完了エンドポイントへリダイレクトする
         flash("問い合わせありがとうございます。")
