@@ -10,7 +10,7 @@ __pycache__/
 Thumbs.db
 
 # 開発ツール・環境変数のキャッシュ（追加推奨）
-.env
+#.env
 .flake8
 .mypy_cache/
 .pytest_cache
