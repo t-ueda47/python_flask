@@ -42,5 +42,6 @@ def contact_complete():
     return render_template("contact_complete.html")
 
 
+# 今開いている（アクティブな）Pythonファイルを実行
 if __name__ == "__main__":
     app.run(debug=True)

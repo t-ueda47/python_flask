@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Amazon風 セッション管理サンプル</title>
+    </head>
+    <body>
+        <header>
+            <h2>ショッピングサイト</h2>
+            <!-- セッションにユーザー名が存在するか判定 -->
+            {% if username %}
+            <p style="color: green">
+                <strong>{{ username }}</strong> さん（ログイン中）
+            </p>
+            <a href="{{ url_for('logout') }}">ログアウト</a>
+            {% else %}
+            <p>ゲストさん（ログインしていません）</p>
+            {% endif %}
+        </header>
+
+        <hr />
+
+        <main>
+            {% if not username %}
+            <h3>ログイン</h3>
+            <form action="{{ url_for('login') }}" method="POST">
+                <label for="username">ユーザー名：</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="例: 上田"
+                    required
+                />
+                <button type="submit">ログイン（セッションに保存）</button>
+            </form>
+            {% else %}
+            <h3>ホーム画面</h3>
+            <p>
+                セッション情報が保持されているため、ページをリロードしても「{{
+                username }} さん」と表示され続けます。
+            </p>
+            {% endif %}
+        </main>
+    </body>
+</html>
