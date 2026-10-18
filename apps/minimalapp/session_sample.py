@@ -1,55 +1,62 @@
-"""セッションを使ったサンプルコード"""
+"""セッションを使ったサンプルコード（ステップ3段階）"""
 
 from datetime import timedelta
-from flask import Flask, redirect, render_template, request, session, url_for
+import os
+import uuid
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, session
+from markupsafe import escape
 
+# .env ファイルの読み込み
+load_dotenv()
+
+# Flaskアプリのインスタンス作成
 app = Flask(__name__)
 
-# セッションの暗号化に必要な秘密鍵（必須）
-app.secret_key = "secret_key_sample_123"
+# .env から秘密鍵を取得して app にセット
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 
-# セッションの有効期限を「7日間」に設定
+# セッションの有効期限設定（例: 7日間）
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
-
-@app.route("/")
-def session_home():
-    """セッションの取得と表示（ホーム画面）"""
-    # session.get("キー名") で値を取得（未保存の場合は None が返る）
-    username = session.get("username")
-
-    # session_home.html に取得した username を渡して描画
-    return render_template("session_home.html", username=username)
+# グローバル変数としてセッションストアを定義
+SESSION_STORE = {}
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 def login():
-    """セッションのセット（ログイン処理）"""
-    # フォームからの入力値を取得
-    user_input = request.form.get("username", "")
+    """【ステップ3】ログインページの表示 ＆ ログイン処理"""
 
-    if user_input:
-        # 【セッションのセット】辞書形式で保存
-        session["username"] = user_input
+    # POSTリクエスト（フォーム送信時）の処理
+    if request.method == "POST":
+        # 1. フォームから値を取り出す（前後の余計な空白を strip() で除去）
+        user_id = request.form.get("user_id", "").strip()
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip()
 
-        # 有効期限（7日間）を有効化
-        session.permanent = True
+        if user_id and username and email:
+            # 2. サーバー側で一意なランダム文字列（セッションID）を生成
+            session_id = str(uuid.uuid4())
 
-    # 処理完了後は session_home 関数（トップ画面）へリダイレクト
-    return redirect(url_for("session_home"))
+            # 3. サーバーの金庫（SESSION_STORE）にデータを登録
+            SESSION_STORE[session_id] = {
+                "user_id": escape(user_id),
+                "username": escape(username),
+                "email": escape(email),
+            }
+
+            # 4. ブラウザの Cookie には「セッションID」のみを書き込む
+            session["session_id"] = session_id
+            session.permanent = True
+
+            # 動作確認用ログ（ターミナルでSESSION_STOREの中身を確認）
+            print("\n--- サーバー側の SESSION_STORE ---")
+            print(SESSION_STORE)
+            print("-----------------------------------\n")
+
+    # GETリクエスト時、およびPOST処理後にログイン画面を表示
+    return render_template("session_home.html")
 
 
-@app.route("/logout")
-def logout():
-    """セッションの削除（ログアウト処理）"""
-
-    # 【セッションの削除】指定したキーのデータを削除
-    session.pop("username", None)
-
-    # ログアウト後も session_home 関数（トップ画面）へリダイレクト
-    return redirect(url_for("session_home"))
-
-
-# 今開いている（アクティブな）Pythonファイルを実行
 if __name__ == "__main__":
     app.run(debug=True)

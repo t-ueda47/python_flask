@@ -1,46 +1,73 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Amazon風 セッション管理サンプル</title>
-    </head>
-    <body>
-        <header>
-            <h2>ショッピングサイト</h2>
-            <!-- セッションにユーザー名が存在するか判定 -->
-            {% if username %}
-            <p style="color: green">
-                <strong>{{ username }}</strong> さん（ログイン中）
-            </p>
-            <a href="{{ url_for('logout') }}">ログアウト</a>
-            {% else %}
-            <p>ゲストさん（ログインしていません）</p>
-            {% endif %}
-        </header>
 
-        <hr />
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン・マイページ</title>
+</head>
 
-        <main>
-            {% if not username %}
-            <h3>ログイン</h3>
-            <form action="{{ url_for('login') }}" method="POST">
-                <label for="username">ユーザー名：</label>
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    placeholder="例: 上田"
-                    required
-                />
-                <button type="submit">ログイン（セッションに保存）</button>
-            </form>
-            {% else %}
-            <h3>ホーム画面</h3>
-            <p>
-                セッション情報が保持されているため、ページをリロードしても「{{
-                username }} さん」と表示され続けます。
-            </p>
-            {% endif %}
-        </main>
-    </body>
+<body>
+
+    <!-- ヘッダーエリア：ログイン状態の判定とメッセージ表示 -->
+    <header>
+        <h2>会員システム</h2>
+
+        {% if user_info %}
+        <!-- ログイン状態の場合 -->
+        <p style="color: green;">
+            ログイン中（ユーザーID: {{ user_info.user_id }}）
+        </p>
+        <a href="{{ url_for('logout') }}">ログアウト</a>
+        {% else %}
+        <!-- 未ログイン状態の場合 -->
+        <p style="color: gray;">ゲストさん（未ログイン）</p>
+        {% endif %}
+    </header>
+
+    <hr>
+
+    <!-- メインコンテンツエリア -->
+    <main>
+        {% if not user_info %}
+        <!-- 未ログイン時：ステップ1で送信するログインフォームを表示 -->
+        <h3>ログイン</h3>
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <div>
+                <label for="user_id">ユーザーID：</label><br>
+                <input type="number" id="user_id" name="user_id" placeholder="例: 1042" required>
+            </div>
+            <br>
+            <div>
+                <label for="username">お名前：</label><br>
+                <input type="text" id="username" name="username" placeholder="例: 山田太郎" required>
+            </div>
+            <br>
+            <div>
+                <label for="email">メールアドレス：</label><br>
+                <input type="email" id="email" name="email" placeholder="例: yamada@example.com" required>
+            </div>
+            <br>
+            <button type="submit">ログイン（セッションID発行）</button>
+        </form>
+
+        {% else %}
+        <!-- ログイン時：ステップ4で特定したユーザー情報を表示 -->
+        <h3>マイページ</h3>
+        <p>サーバー側の SESSION_STORE から取得したデータ：</p>
+
+        <ul>
+            <li><strong>ユーザーID：</strong> {{ user_info.user_id }}</li>
+            <li><strong>お名前：</strong> {{ user_info.username }}</li>
+            <li><strong>メールアドレス：</strong> {{ user_info.email }}</li>
+        </ul>
+
+        <p style="color: gray; font-size: 0.9em;">
+            ※ブラウザの Cookie に保存されているのは「ランダム生成されたセッションID（文字列）」のみです。
+        </p>
+        {% endif %}
+    </main>
+
+</body>
+
 </html>
