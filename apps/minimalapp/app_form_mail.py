@@ -16,7 +16,7 @@ app.logger.setLevel(logging.DEBUG)
 
 # --- メール設定（.envから取得してコンフィグにセット） ---
 app.config["MAIL_SERVER"] = os.environ.get("MAIL_SERVER")
-app.config["MAIL_PORT"] = int(os.environ.get("MAIL_PORT"))
+app.config["MAIL_PORT"] = int(os.environ.get("MAIL_PORT") or 587)
 app.config["MAIL_USE_TLS"] = os.environ.get("MAIL_USE_TLS") == "True"
 app.config["MAIL_USE_SSL"] = os.environ.get("MAIL_USE_SSL") == "True"
 app.config["MAIL_USERNAME"] = os.environ.get("MAIL_USERNAME")
