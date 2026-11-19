@@ -27,10 +27,14 @@ app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_DEFAULT_SENDER")
 mail = Mail(app)
 
 
-# メール送信関数
-def send_email(to, subject, template, **kwargs):
+# メール送信関数（cc と bcc は任意で受け取れる）
+def send_email(to, subject, template, cc=None, bcc=None, **kwargs):
     """メールを送信する関数"""
     msg = Message(subject, recipients=[to])
+    if cc:
+        msg.cc = [cc]
+    if bcc:
+        msg.bcc = [bcc]
     msg.body = render_template(template + ".txt", **kwargs)
     msg.html = render_template(template + ".html", **kwargs)
     mail.send(msg)
